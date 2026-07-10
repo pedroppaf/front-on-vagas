@@ -13,7 +13,7 @@ import java.util.Map;
 @Service
 public class CandidateService {
 
-    public Token login (String username, String password) {
+    public Token login(String username, String password) {
         RestTemplate rt = new RestTemplate();
 
         HttpHeaders headers = new HttpHeaders();
