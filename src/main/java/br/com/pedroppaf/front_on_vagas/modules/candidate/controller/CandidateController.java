@@ -1,6 +1,7 @@
 package br.com.pedroppaf.front_on_vagas.modules.candidate.controller;
 
 import br.com.pedroppaf.front_on_vagas.modules.candidate.service.CandidateService;
+import br.com.pedroppaf.front_on_vagas.modules.candidate.service.FindJobsService;
 import br.com.pedroppaf.front_on_vagas.modules.candidate.service.ProfileCandidateService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +28,9 @@ public class CandidateController {
 
     @Autowired
     private ProfileCandidateService profileCandidateService;
+
+    @Autowired
+    private FindJobsService findJobsService;
 
     @GetMapping("/login")
     public String login() {
@@ -65,15 +69,30 @@ public class CandidateController {
             var user = this.profileCandidateService.execute(authentication.getDetails().toString());
             model.addAttribute("user", user);
             return "candidate/profile";
-        }catch (HttpClientErrorException e) {
+        } catch (HttpClientErrorException e) {
             return "redirect:/candidate/login";
         }
     }
 
     @GetMapping("/jobs")
     @PreAuthorize("hasRole('CANDIDATE')")
-    public String jobs(){
+    public String jobs(Model model, String filter) {
+        System.out.println("Valor do filtro " + filter);
+
+        try {
+            if (filter != null) {
+                var jobs = this.findJobsService.execute(getToken(), filter);
+                model.addAttribute("jobs", jobs);
+            }
+        } catch (HttpClientErrorException e) {
+            return "redirect:/candidate/login";
+        }
         return "candidate/jobs";
+    }
+
+    private String getToken() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        return authentication.getDetails().toString();
     }
 
 
