@@ -14,6 +14,7 @@ public class SecurityConfig {
     SecurityFilterChain securityFilterChain(HttpSecurity http) {
         http.authorizeHttpRequests(auth -> {
                     auth.requestMatchers("/candidate/login").permitAll()
+                            .requestMatchers("/candidate/create").permitAll()
                             .requestMatchers("/candidate/singIn").permitAll();
                     auth.anyRequest().authenticated();
                 })
