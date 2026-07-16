@@ -1,9 +1,8 @@
 package br.com.pedroppaf.front_on_vagas.modules.candidate.controller;
 
-import br.com.pedroppaf.front_on_vagas.modules.candidate.service.ApplyJobService;
-import br.com.pedroppaf.front_on_vagas.modules.candidate.service.CandidateService;
-import br.com.pedroppaf.front_on_vagas.modules.candidate.service.FindJobsService;
-import br.com.pedroppaf.front_on_vagas.modules.candidate.service.ProfileCandidateService;
+import br.com.pedroppaf.front_on_vagas.modules.candidate.dto.CreateCandidateDTO;
+import br.com.pedroppaf.front_on_vagas.modules.candidate.service.*;
+import br.com.pedroppaf.front_on_vagas.utils.FormatErrorMessage;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -39,14 +38,12 @@ public class CandidateController {
     @Autowired
     private ApplyJobService applyJobService;
 
+    @Autowired
+    private CreateCandidateService createCandidateService;
+
     @GetMapping("/login")
     public String login() {
         return "candidate/login";
-    }
-
-    @GetMapping("/create")
-    public String create() {
-        return "candidate/create";
     }
 
     @PostMapping("/singIn")
@@ -108,6 +105,23 @@ public class CandidateController {
         this.applyJobService.execute(getToken(), jobId);
         return "redirect:/candidate/jobs";
 
+    }
+
+    @GetMapping("/create")
+    public String create(Model model) {
+        model.addAttribute("candidate", new CreateCandidateDTO());
+        return "candidate/create";
+    }
+
+    @PostMapping("/create")
+    public String save(CreateCandidateDTO candidate, Model model){
+        try {
+            this.createCandidateService.execute(candidate);
+        }catch (HttpClientErrorException ex) {
+            model.addAttribute("error_message", FormatErrorMessage.formatErrorMessage(ex.getResponseBodyAsString()));
+        }
+        model.addAttribute("candidate", candidate);
+        return "candidate/create";
     }
 
     private String getToken() {
