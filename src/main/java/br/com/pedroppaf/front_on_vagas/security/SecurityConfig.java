@@ -11,11 +11,12 @@ import org.springframework.security.web.SecurityFilterChain;
 public class SecurityConfig {
 
     @Bean
-    SecurityFilterChain securityFilterChain(HttpSecurity http) {
+    SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.authorizeHttpRequests(auth -> {
                     auth.requestMatchers("/candidate/login").permitAll()
                             .requestMatchers("/candidate/create").permitAll()
-                            .requestMatchers("/candidate/singIn").permitAll();
+                            .requestMatchers("/candidate/singIn").permitAll()
+                            .requestMatchers("/company/create").permitAll();
                     auth.anyRequest().authenticated();
                 })
                 .formLogin(form -> form.loginPage("/candidate/login"));

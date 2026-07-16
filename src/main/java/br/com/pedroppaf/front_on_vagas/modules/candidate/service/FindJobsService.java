@@ -8,6 +8,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpClientErrorException.Unauthorized;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -24,15 +25,16 @@ public class FindJobsService {
 
         HttpEntity<Map<String, String>> request = new HttpEntity<>(headers);
 
-        UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl("http://localhost:8080/candidate/jobs")
+        UriComponentsBuilder builder = UriComponentsBuilder.fromUriString("http://localhost:8080/candidate/job")
                 .queryParam("filter", filter);
 
-        ParameterizedTypeReference<List<JobDTO>> responseType = new ParameterizedTypeReference<List<JobDTO>>() {};
+        ParameterizedTypeReference<List<JobDTO>> responseType = new ParameterizedTypeReference<List<JobDTO>>() {
+        };
 
         try {
             var result = rt.exchange(builder.toUriString(), HttpMethod.GET, request, responseType);
             return result.getBody();
-        } catch (HttpClientErrorException.Unauthorized ex) {
+        } catch (Unauthorized ex) {
             throw new HttpClientErrorException(HttpStatus.UNAUTHORIZED);
         }
     }
