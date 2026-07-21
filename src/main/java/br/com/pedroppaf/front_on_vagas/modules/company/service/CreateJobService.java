@@ -1,6 +1,7 @@
 package br.com.pedroppaf.front_on_vagas.modules.company.service;
 
 import br.com.pedroppaf.front_on_vagas.modules.company.dto.CreateJobsDTO;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -10,6 +11,9 @@ import org.springframework.web.client.RestTemplate;
 @Service
 public class CreateJobService {
 
+    @Value("${host.api.gestao.vagas}")
+    private String hostAPIGestaoVagas;
+
     public String execute (CreateJobsDTO jobs, String token) {
         RestTemplate rt = new RestTemplate();
 
@@ -18,8 +22,9 @@ public class CreateJobService {
         headers.setBearerAuth(token);
 
         HttpEntity<CreateJobsDTO> request = new HttpEntity<>(jobs, headers);
+        var url = hostAPIGestaoVagas.concat("/company/job/");
 
-        var result = rt.postForObject("http://localhost:8080/company/job/", request, String.class);
+        var result = rt.postForObject(url, request, String.class);
         return result;
 
     }
